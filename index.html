@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pikmin Flower Plant Tracker</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <div>
+        <h1>Pikmin Flower Plant</h1>
+        <p class="subtitle">Spreadsheet tracker · Gist sync</p>
+      </div>
+    </div>
+    <div class="toolbar">
+      <span id="syncStatus" class="sync-status" data-state="idle">Local only</span>
+      <button type="button" id="btnLoad" class="btn">Load Gist</button>
+      <button type="button" id="btnSave" class="btn btn-primary">Save Gist</button>
+      <button type="button" id="btnSettings" class="btn" aria-expanded="false">Settings</button>
+    </div>
+  </header>
+
+  <aside id="settingsPanel" class="settings" hidden>
+    <h2>GitHub Gist</h2>
+    <p class="hint">
+      Create a Gist with a file named <code>pikmin-data.json</code>, then paste the Gist ID and a PAT with
+      <code>gist</code> scope. Token is stored only in this browser (localStorage).
+    </p>
+    <label>
+      Gist ID
+      <input id="gistId" type="text" autocomplete="off" placeholder="abcdefghijklmnopqrstuvwxyz012345" />
+    </label>
+    <label>
+      GitHub Token
+      <input id="gistToken" type="password" autocomplete="off" placeholder="ghp_…" />
+    </label>
+    <label>
+      Flower target (N8 base)
+      <input id="flowerTarget" type="number" min="1" step="1" value="15000" />
+    </label>
+    <div class="settings-actions">
+      <button type="button" id="btnSaveSettings" class="btn btn-primary">Save settings</button>
+      <button type="button" id="btnClearToken" class="btn">Clear token</button>
+    </div>
+  </aside>
+
+  <main class="sheet-wrap">
+    <section class="sheet" aria-label="Plant spreadsheet">
+      <div class="sheet-tabs">
+        <span class="tab active">Plant</span>
+      </div>
+
+      <!-- Session log (Excel A–G) -->
+      <div class="block">
+        <div class="block-title">Session log</div>
+        <div class="table-scroll">
+          <table class="sheet-table session-table" id="sessionTable">
+            <thead>
+              <tr>
+                <th class="col-idx"></th>
+                <th>Date</th>
+                <th>Pikmin Num</th>
+                <th>Flower</th>
+                <th>Time Spent (min.)</th>
+                <th>Average</th>
+                <th>Petal Spent</th>
+                <th>Flower/Petal</th>
+                <th class="col-actions"></th>
+              </tr>
+            </thead>
+            <tbody id="sessionBody"></tbody>
+          </table>
+        </div>
+        <button type="button" id="btnAddSession" class="btn btn-add">+ Add row</button>
+      </div>
+
+      <!-- Color planner (Excel H–N) -->
+      <div class="block">
+        <div class="block-title">Color petal planner</div>
+        <div class="avg-fp-row">
+          <span class="label-cell">Avg. F/P</span>
+          <input id="avgFP" class="cell-input input-green" type="number" step="any" value="50" />
+        </div>
+        <div class="table-scroll">
+          <table class="sheet-table planner-table" id="plannerTable">
+            <thead>
+              <tr>
+                <th class="row-label"></th>
+                <th class="c-white">white</th>
+                <th class="c-yellow">yellow</th>
+                <th class="c-red">red</th>
+                <th class="c-blue">blue</th>
+                <th class="c-meta">min / sum</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr data-row="nectar">
+                <th class="row-label">Nectar (eq 2 P)</th>
+                <td class="c-white"><input data-k="nectar.white" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-yellow"><input data-k="nectar.yellow" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-red"><input data-k="nectar.red" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-blue"><input data-k="nectar.blue" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-meta calc" id="meta-nectar"></td>
+              </tr>
+              <tr data-row="petal">
+                <th class="row-label">Petal</th>
+                <td class="c-white"><input data-k="petal.white" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-yellow"><input data-k="petal.yellow" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-red"><input data-k="petal.red" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-blue"><input data-k="petal.blue" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-meta label-soft">min</td>
+              </tr>
+              <tr data-row="eqP">
+                <th class="row-label">equal P sum</th>
+                <td class="c-white calc" data-out="eqP.white"></td>
+                <td class="c-yellow calc" data-out="eqP.yellow"></td>
+                <td class="c-red calc" data-out="eqP.red"></td>
+                <td class="c-blue calc" data-out="eqP.blue"></td>
+                <td class="c-meta calc" data-out="eqP.min"></td>
+              </tr>
+              <tr data-row="minusMin">
+                <th class="row-label">-min P</th>
+                <td class="c-white calc" data-out="minusMin.white"></td>
+                <td class="c-yellow calc" data-out="minusMin.yellow"></td>
+                <td class="c-red calc" data-out="minusMin.red"></td>
+                <td class="c-blue calc" data-out="minusMin.blue"></td>
+                <td class="c-meta"></td>
+              </tr>
+              <tr data-row="estF">
+                <th class="row-label">est. F per P</th>
+                <td class="c-white calc" data-out="estF.white"></td>
+                <td class="c-yellow calc" data-out="estF.yellow"></td>
+                <td class="c-red calc" data-out="estF.red"></td>
+                <td class="c-blue calc" data-out="estF.blue"></td>
+                <td class="c-meta calc" data-out="estF.sum"></td>
+              </tr>
+              <tr data-row="avgRemain">
+                <th class="row-label">avg remain F</th>
+                <td class="c-white calc" data-out="avgRemain.white"></td>
+                <td class="c-yellow calc" data-out="avgRemain.yellow"></td>
+                <td class="c-red calc" data-out="avgRemain.red"></td>
+                <td class="c-blue calc" data-out="avgRemain.blue"></td>
+                <td class="c-meta calc" data-out="avgRemain.remain"></td>
+              </tr>
+              <tr data-row="totalF">
+                <th class="row-label">total F</th>
+                <td class="c-white calc" data-out="totalF.white"></td>
+                <td class="c-yellow calc" data-out="totalF.yellow"></td>
+                <td class="c-red calc" data-out="totalF.red"></td>
+                <td class="c-blue calc" data-out="totalF.blue"></td>
+                <td class="c-meta calc" data-out="totalF.sum"></td>
+              </tr>
+              <tr data-row="fAcc" class="row-gray">
+                <th class="row-label">F Accumulated</th>
+                <td class="c-white calc" data-out="fAcc.white"></td>
+                <td class="c-yellow calc" data-out="fAcc.yellow"></td>
+                <td class="c-red calc" data-out="fAcc.red"></td>
+                <td class="c-blue calc" data-out="fAcc.blue"></td>
+                <td class="c-meta"></td>
+              </tr>
+              <tr data-row="expectTime">
+                <th class="row-label">Expect Time</th>
+                <td class="c-white calc" data-out="expectTime.white"></td>
+                <td class="c-yellow calc" data-out="expectTime.yellow"></td>
+                <td class="c-red calc" data-out="expectTime.red"></td>
+                <td class="c-blue calc" data-out="expectTime.blue"></td>
+                <td class="c-meta calc" data-out="expectTime.sum"></td>
+              </tr>
+              <tr data-row="realTime">
+                <th class="row-label">Real Time Spent</th>
+                <td class="c-white"><input data-k="realTime.white" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-yellow"><input data-k="realTime.yellow" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-red"><input data-k="realTime.red" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-blue"><input data-k="realTime.blue" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-meta"></td>
+              </tr>
+              <tr data-row="expectP">
+                <th class="row-label">Expect P Spent</th>
+                <td class="c-white calc" data-out="expectP.white"></td>
+                <td class="c-yellow calc" data-out="expectP.yellow"></td>
+                <td class="c-red calc" data-out="expectP.red"></td>
+                <td class="c-blue calc" data-out="expectP.blue"></td>
+                <td class="c-meta calc" data-out="expectP.sum"></td>
+              </tr>
+              <tr data-row="expectEndP" class="row-gray">
+                <th class="row-label">Expect End P</th>
+                <td class="c-white calc" data-out="expectEndP.white"></td>
+                <td class="c-yellow calc" data-out="expectEndP.yellow"></td>
+                <td class="c-red calc" data-out="expectEndP.red"></td>
+                <td class="c-blue calc" data-out="expectEndP.blue"></td>
+                <td class="c-meta"></td>
+              </tr>
+              <tr data-row="resultPSpent">
+                <th class="row-label">Result P spent</th>
+                <td class="c-white calc" data-out="resultPSpent.white"></td>
+                <td class="c-yellow calc" data-out="resultPSpent.yellow"></td>
+                <td class="c-red calc" data-out="resultPSpent.red"></td>
+                <td class="c-blue calc" data-out="resultPSpent.blue"></td>
+                <td class="c-meta"></td>
+              </tr>
+              <tr data-row="resultEndP">
+                <th class="row-label">Result End P</th>
+                <td class="c-white"><input data-k="resultEndP.white" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-yellow"><input data-k="resultEndP.yellow" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-red"><input data-k="resultEndP.red" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-blue"><input data-k="resultEndP.blue" class="cell-input input-green" type="number" step="any" /></td>
+                <td class="c-meta calc" data-out="resultEndP.sum"></td>
+              </tr>
+              <tr data-row="delta">
+                <th class="row-label">Delta</th>
+                <td class="c-white calc" data-out="delta.white"></td>
+                <td class="c-yellow calc" data-out="delta.yellow"></td>
+                <td class="c-red calc" data-out="delta.red"></td>
+                <td class="c-blue calc" data-out="delta.blue"></td>
+                <td class="c-meta"></td>
+              </tr>
+              <tr data-row="endEqP">
+                <th class="row-label">End eq. P sum</th>
+                <td class="c-white calc" data-out="endEqP.white"></td>
+                <td class="c-yellow calc" data-out="endEqP.yellow"></td>
+                <td class="c-red calc" data-out="endEqP.red"></td>
+                <td class="c-blue calc" data-out="endEqP.blue"></td>
+                <td class="c-meta"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="legend">
+          <span class="swatch input-green"></span> editable (Excel green)
+          <span class="swatch calc-swatch"></span> formula
+          <span class="swatch gray-swatch"></span> accumulated / expect end
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "updatedAt": "2026-07-21T00:00:00.000Z",
+  "sessions": [
+    {
+      "date": "2026-07-21",
+      "pikminNum": 39,
+      "flower": 15011,
+      "timeSpent": 89,
+      "petalSpent": null,
+      "flowerPerPetal": null
+    }
+  ],
+  "planner": {
+    "avgFP": 50,
+    "flowerTarget": 15000,
+    "nectar": {
+      "white": 209,
+      "yellow": 258,
+      "red": 143,
+      "blue": 173
+    },
+    "petal": {
+      "white": 550,
+      "yellow": 550,
+      "red": 550,
+      "blue": 550
+    },
+    "realTime": {
+      "white": null,
+      "yellow": null,
+      "red": null,
+      "blue": null
+    },
+    "resultEndP": {
+      "white": null,
+      "yellow": null,
+      "red": null,
+      "blue": null
+    }
+  }
+}
