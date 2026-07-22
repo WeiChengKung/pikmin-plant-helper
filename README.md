@@ -4,8 +4,8 @@ Spreadsheet-style web tracker for Pikmin Bloom flower planting stats. Layout and
 
 ## Features
 
-- Session log: Date, Pikmin Num, Flower, Time Spent, Average (`Flower / Time`), Petal Spent, Flower/Petal
-- Color planner: white / yellow / red / blue nectar & petal inputs with Excel-equivalent formulas
+- Session log: Date, Pikmin Num, Flower, Time Spent, Flower/min, P duration (from Pikmin Num), Flower/Petal (`Flower/min ÷ P duration`), Petal Spent
+- Color planner: white / yellow / red / blue nectar & petal inputs with Excel-equivalent formulas; P duration select (30/20/15/12/10 sec)
 - Green cells = editable; gray rows = F Accumulated / Expect End P
 - Local draft in `localStorage`; Load / Save via GitHub Gist API
 
@@ -61,13 +61,12 @@ If the repo name differs, update `base` is not required (this is a plain static 
       "pikminNum": 39,
       "flower": 15011,
       "timeSpent": 89,
-      "petalSpent": null,
-      "flowerPerPetal": null
+      "petalSpent": null
     }
   ],
   "planner": {
-    "avgFP": 50,
-    "pDuration": 15,
+    "avgFP": 30,
+    "pDuration": 12,
     "flowerTarget": 15000,
     "nectar": { "white": 209, "yellow": 258, "red": 143, "blue": 173 },
     "petal": { "white": 550, "yellow": 550, "red": 550, "blue": 550 },
@@ -81,13 +80,16 @@ If the repo name differs, update `base` is not required (this is a plain static 
 
 | Row | Logic |
 |-----|--------|
+| Session Flower/min | Flower ÷ Time Spent |
+| Session P duration | from Pikmin Num: 1–9→30s, 10–19→20s, 20–29→15s, 30–39→12s, 40+→10s |
+| Session Flower/Petal | Flower/min ÷ P duration |
 | equal P sum | Petal + Nectar × 2 |
 | -min P | equal P − min(equal P) |
 | est. F per P | -min P × Avg. F/P |
 | avg remain F | `(target − Σ est.F)` split across colors (Excel IF) |
 | total F | est. F + avg remain F; if &lt; 0 set to 0, other colors rescale to flower target |
 | Expect P Spent | total F / Avg. F/P |
-| Expect Time | Expect P / 60 × P duration (min; default P duration = 15 ≈ old /4) |
+| Expect Time | Expect P / 60 × P duration (min) |
 | Expect End P | Petal − Expect P Spent |
 | Result P spent | Petal − Result End P |
 | Delta | Result End P − Expect End P |

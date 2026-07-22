@@ -7,13 +7,12 @@
       "pikminNum": 39,
       "flower": 15011,
       "timeSpent": 89,
-      "petalSpent": null,
-      "flowerPerPetal": null
+      "petalSpent": null
     }
   ],
   "planner": {
     "avgFP": 30,
-    "pDuration": 15,
+    "pDuration": 12,
     "flowerTarget": 15000,
     "nectar": {
       "white": 209,

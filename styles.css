@@ -433,6 +433,15 @@ body {
   min-height: 2rem;
 }
 
+.avg-fp-row .cell-select {
+  width: auto;
+  min-width: 9.5rem;
+  padding: 0.25rem 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
 .legend {
   display: flex;
   flex-wrap: wrap;

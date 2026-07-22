@@ -13,13 +13,33 @@
     resultEndP: { white: null, yellow: null, red: null, blue: null },
   });
 
+  const P_DURATION_OPTIONS = [30, 20, 15, 12, 10];
+
+  function pDurationFromPikmin(pikminNum) {
+    const n = num(pikminNum);
+    if (n === null || n < 1) return null;
+    if (n <= 9) return 30;
+    if (n <= 19) return 20;
+    if (n <= 29) return 15;
+    if (n <= 39) return 12;
+    return 10; // 40+
+  }
+
+  function nearestPDurationOption(v) {
+    const n = num(v);
+    if (n === null) return 15;
+    if (P_DURATION_OPTIONS.includes(n)) return n;
+    return P_DURATION_OPTIONS.reduce((best, opt) =>
+      Math.abs(opt - n) < Math.abs(best - n) ? opt : best
+    );
+  }
+
   const defaultSession = () => ({
     date: new Date().toISOString().slice(0, 10),
     pikminNum: 39,
     flower: 15011,
     timeSpent: 89,
     petalSpent: null,
-    flowerPerPetal: null,
   });
 
   let state = {
@@ -284,18 +304,19 @@
     $$("#sessionBody tr").forEach((tr, i) => {
       const s = state.sessions[i];
       if (!s) return;
-      const avg =
+      const flowerPerMin =
         num(s.flower) !== null && num(s.timeSpent) && n0(s.timeSpent) !== 0
           ? n0(s.flower) / n0(s.timeSpent)
           : null;
-      const fp =
-        num(s.flower) !== null && num(s.petalSpent) && n0(s.petalSpent) !== 0
-          ? n0(s.flower) / n0(s.petalSpent)
-          : num(s.flowerPerPetal);
+      const pDur = pDurationFromPikmin(s.pikminNum);
+      const flowerPerPetal =
+        flowerPerMin !== null && pDur ? flowerPerMin / pDur : null;
       const avgEl = tr.querySelector('[data-field="average"]');
+      const durEl = tr.querySelector('[data-field="pDuration"]');
       const fpEl = tr.querySelector('[data-field="flowerPerPetal"]');
-      if (avgEl) avgEl.textContent = fmt(avg);
-      if (fpEl && fpEl.tagName !== "INPUT") fpEl.textContent = fmt(fp);
+      if (avgEl) avgEl.textContent = fmt(flowerPerMin);
+      if (durEl) durEl.textContent = pDur === null ? "" : String(pDur);
+      if (fpEl) fpEl.textContent = fmt(flowerPerPetal);
     });
   }
 
@@ -307,12 +328,13 @@
       tr.innerHTML = `
         <th>${i + 1}</th>
         <td><input data-field="date" type="date" value="${s.date || ""}" /></td>
-        <td><input data-field="pikminNum" class="input-green" type="number" step="any" value="${s.pikminNum ?? ""}" /></td>
+        <td><input data-field="pikminNum" class="input-green" type="number" step="1" min="1" value="${s.pikminNum ?? ""}" /></td>
         <td><input data-field="flower" class="input-green" type="number" step="any" value="${s.flower ?? ""}" /></td>
         <td><input data-field="timeSpent" class="input-green" type="number" step="any" value="${s.timeSpent ?? ""}" /></td>
         <td class="calc" data-field="average"></td>
+        <td class="calc" data-field="pDuration"></td>
+        <td class="calc" data-field="flowerPerPetal"></td>
         <td><input data-field="petalSpent" class="input-green" type="number" step="any" value="${s.petalSpent ?? ""}" /></td>
-        <td><input data-field="flowerPerPetal" class="input-green" type="number" step="any" value="${s.flowerPerPetal ?? ""}" /></td>
         <td><button type="button" class="btn btn-icon" data-del="${i}" title="Delete row">×</button></td>
       `;
       body.appendChild(tr);
@@ -348,7 +370,9 @@
 
   function fillPlannerInputs() {
     $("#avgFP").value = state.planner.avgFP ?? "";
-    $("#pDuration").value = state.planner.pDuration ?? "";
+    const dur = nearestPDurationOption(state.planner.pDuration);
+    state.planner.pDuration = dur;
+    $("#pDuration").value = String(dur);
     $$("[data-k]").forEach((input) => {
       const [group, color] = input.dataset.k.split(".");
       const v = state.planner[group]?.[color];
