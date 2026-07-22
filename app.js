@@ -233,6 +233,7 @@
     COLORS.forEach((c) => {
       resultPSpent[c] = n0(p.petal[c]) - n0(resultEndP[c]);
     });
+    const resultPSpentSum = COLORS.reduce((s, c) => s + resultPSpent[c], 0);
 
     const delta = {};
     COLORS.forEach((c) => {
@@ -261,6 +262,7 @@
       expectTimeSum,
       expectEndP,
       resultPSpent,
+      resultPSpentSum,
       resultEndPSum,
       delta,
       endEqP,
@@ -301,6 +303,7 @@
     setOut("totalF.sum", r.totalFSum);
     setOut("expectTime.sum", r.expectTimeSum);
     setOut("expectP.sum", r.expectPSum);
+    setOut("resultPSpent.sum", r.resultPSpentSum);
     setOut("resultEndP.sum", r.resultEndPSum);
     setOut(
       "realTime.sum",
@@ -317,7 +320,7 @@
           : null;
       const pDur = pDurationFromPikmin(s.pikminNum);
       const flowerPerPetal =
-        flowerPerMin !== null && pDur ? flowerPerMin / pDur : null;
+        flowerPerMin !== null && pDur ? (flowerPerMin * 60) / pDur : null;
       const avgEl = tr.querySelector('[data-field="average"]');
       const durEl = tr.querySelector('[data-field="pDuration"]');
       const fpEl = tr.querySelector('[data-field="flowerPerPetal"]');
