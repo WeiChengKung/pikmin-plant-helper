@@ -320,7 +320,7 @@
           : null;
       const pDur = pDurationFromPikmin(s.pikminNum);
       const flowerPerPetal =
-        flowerPerMin !== null && pDur ? (flowerPerMin * 60) / pDur : null;
+        flowerPerMin !== null && pDur ? flowerPerMin / (60 / pDur) : null;
       const avgEl = tr.querySelector('[data-field="average"]');
       const durEl = tr.querySelector('[data-field="pDuration"]');
       const fpEl = tr.querySelector('[data-field="flowerPerPetal"]');
