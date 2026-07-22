@@ -296,13 +296,16 @@
       setOut(`delta.${c}`, r.delta[c]);
       setOut(`endEqP.${c}`, r.endEqP[c]);
     });
-    setOut("eqP.min", r.eqMin);
     setOut("estF.sum", r.estFSum);
     setOut("avgRemain.remain", r.remain);
     setOut("totalF.sum", r.totalFSum);
     setOut("expectTime.sum", r.expectTimeSum);
     setOut("expectP.sum", r.expectPSum);
     setOut("resultEndP.sum", r.resultEndPSum);
+    setOut(
+      "realTime.sum",
+      COLORS.reduce((s, c) => s + n0(state.planner.realTime?.[c]), 0)
+    );
 
     // session derived columns
     $$("#sessionBody tr").forEach((tr, i) => {
