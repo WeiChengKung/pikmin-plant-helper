@@ -248,7 +248,15 @@
     if (el) el.textContent = fmt(value);
   }
 
+  function syncScalarInputsFromDom() {
+    const avgEl = $("#avgFP");
+    const durEl = $("#pDuration");
+    if (avgEl) state.planner.avgFP = num(avgEl.value);
+    if (durEl) state.planner.pDuration = num(durEl.value);
+  }
+
   function recalc() {
+    syncScalarInputsFromDom();
     const r = computePlanner(state.planner);
     COLORS.forEach((c) => {
       setOut(`eqP.${c}`, r.eqP[c]);
@@ -297,7 +305,7 @@
     state.sessions.forEach((s, i) => {
       const tr = document.createElement("tr");
       tr.innerHTML = `
-        <th>${i + 2}</th>
+        <th>${i + 1}</th>
         <td><input data-field="date" type="date" value="${s.date || ""}" /></td>
         <td><input data-field="pikminNum" class="input-green" type="number" step="any" value="${s.pikminNum ?? ""}" /></td>
         <td><input data-field="flower" class="input-green" type="number" step="any" value="${s.flower ?? ""}" /></td>
@@ -349,16 +357,15 @@
   }
 
   function bindPlannerInputs() {
-    $("#avgFP").addEventListener("input", () => {
-      state.planner.avgFP = num($("#avgFP").value);
+    const onScalarEdit = () => {
+      syncScalarInputsFromDom();
       persistLocal();
       recalc();
-    });
+    };
 
-    $("#pDuration").addEventListener("input", () => {
-      state.planner.pDuration = num($("#pDuration").value);
-      persistLocal();
-      recalc();
+    ["input", "change", "keyup"].forEach((evt) => {
+      $("#avgFP")?.addEventListener(evt, onScalarEdit);
+      $("#pDuration")?.addEventListener(evt, onScalarEdit);
     });
 
     $$("[data-k]").forEach((input) => {
