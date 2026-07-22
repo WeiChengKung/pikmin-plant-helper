@@ -4,7 +4,8 @@
   const LS_KEY = "pikmin-tracker-v1";
 
   const defaultPlanner = () => ({
-    avgFP: 50,
+    avgFP: 30,
+    pDuration: 15,
     flowerTarget: 15000,
     nectar: { white: 209, yellow: 258, red: 143, blue: 173 },
     petal: { white: 550, yellow: 550, red: 550, blue: 550 },
@@ -89,7 +90,10 @@
       if (!raw) return false;
       const data = JSON.parse(raw);
       if (data?.sessions && data?.planner) {
-        state = data;
+        state = {
+          sessions: data.sessions,
+          planner: { ...defaultPlanner(), ...data.planner },
+        };
         return true;
       }
     } catch {
@@ -124,6 +128,7 @@
   /* —— Excel-equivalent formulas —— */
   function computePlanner(p) {
     const avgFP = n0(p.avgFP);
+    const pDuration = n0(p.pDuration);
     const target = n0(p.flowerTarget) || 15000;
 
     const eqP = {};
@@ -185,7 +190,7 @@
 
     const expectTime = {};
     COLORS.forEach((c) => {
-      expectTime[c] = expectP[c] / 4;
+      expectTime[c] = (expectP[c] / 60) * pDuration;
     });
     const expectTimeSum = COLORS.reduce((s, c) => s + expectTime[c], 0);
 
@@ -335,6 +340,7 @@
 
   function fillPlannerInputs() {
     $("#avgFP").value = state.planner.avgFP ?? "";
+    $("#pDuration").value = state.planner.pDuration ?? "";
     $$("[data-k]").forEach((input) => {
       const [group, color] = input.dataset.k.split(".");
       const v = state.planner[group]?.[color];
@@ -345,6 +351,12 @@
   function bindPlannerInputs() {
     $("#avgFP").addEventListener("input", () => {
       state.planner.avgFP = num($("#avgFP").value);
+      persistLocal();
+      recalc();
+    });
+
+    $("#pDuration").addEventListener("input", () => {
+      state.planner.pDuration = num($("#pDuration").value);
       persistLocal();
       recalc();
     });

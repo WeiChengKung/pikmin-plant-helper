@@ -12,7 +12,8 @@
     }
   ],
   "planner": {
-    "avgFP": 50,
+    "avgFP": 30,
+    "pDuration": 15,
     "flowerTarget": 15000,
     "nectar": {
       "white": 209,

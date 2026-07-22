@@ -67,6 +67,7 @@ If the repo name differs, update `base` is not required (this is a plain static 
   ],
   "planner": {
     "avgFP": 50,
+    "pDuration": 15,
     "flowerTarget": 15000,
     "nectar": { "white": 209, "yellow": 258, "red": 143, "blue": 173 },
     "petal": { "white": 550, "yellow": 550, "red": 550, "blue": 550 },
@@ -86,7 +87,7 @@ If the repo name differs, update `base` is not required (this is a plain static 
 | avg remain F | `(target − Σ est.F)` split across colors (Excel IF) |
 | total F | est. F + avg remain F; if &lt; 0 set to 0, other colors rescale to flower target |
 | Expect P Spent | total F / Avg. F/P |
-| Expect Time | Expect P / 4 |
+| Expect Time | Expect P / 60 × P duration (min; default P duration = 15 ≈ old /4) |
 | Expect End P | Petal − Expect P Spent |
 | Result P spent | Petal − Result End P |
 | Delta | Result End P − Expect End P |
