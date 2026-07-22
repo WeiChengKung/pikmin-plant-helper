@@ -151,11 +151,25 @@
       else avgRemain[c] = remain / 3;
     });
 
+    // total F = est + avg remain; clamp negatives to 0 and
+    // rescale other colors so Σ total F still equals the flower target.
     const totalF = {};
     COLORS.forEach((c) => {
-      totalF[c] = estF[c] + avgRemain[c];
+      totalF[c] = Math.max(0, estF[c] + avgRemain[c]);
     });
-    const totalFSum = COLORS.reduce((s, c) => s + totalF[c], 0);
+    let totalFSum = COLORS.reduce((s, c) => s + totalF[c], 0);
+    if (totalFSum > 0 && Math.abs(totalFSum - target) > 1e-9) {
+      const scale = target / totalFSum;
+      COLORS.forEach((c) => {
+        totalF[c] *= scale;
+      });
+      totalFSum = target;
+    } else if (totalFSum === 0 && target > 0) {
+      COLORS.forEach((c) => {
+        totalF[c] = target / COLORS.length;
+      });
+      totalFSum = target;
+    }
 
     const fAcc = {};
     fAcc.white = totalF.white;
