@@ -4,7 +4,7 @@ Spreadsheet-style web tracker for Pikmin Bloom flower planting stats. Data syncs
 
 ## Features
 
-- Session log: Date, Pikmin Num, Flower, Time Spent, Flower/min, P duration (from Pikmin Num), Flower/Petal (`Flower/min ÷ (60 / P duration)`), Petal Spent
+- Session log: Date, Pikmin Num, Flower, Time Spent, Flower/min, P duration, Flower/Petal (rate) (`Flower/min ÷ (60 / P duration)`), Flower/Petal (spent) (`Flower ÷ Petal Spent`), Petal Spent
 - Color planner: white / yellow / red / blue nectar & petal inputs with Excel-equivalent formulas; P duration select (30/20/15/12/10 sec)
 - Green cells = editable; gray rows = F Accumulated / Expect End P
 - Local draft in `localStorage`; Load / Save via GitHub Gist API
@@ -82,7 +82,8 @@ If the repo name differs, update `base` is not required (this is a plain static 
 |-----|--------|
 | Session Flower/min | Flower ÷ Time Spent |
 | Session P duration | from Pikmin Num: 1–9→30s, 10–19→20s, 20–29→15s, 30–39→12s, 40+→10s |
-| Session Flower/Petal | Flower/min ÷ (60 / P duration) |
+| Session Flower/Petal (rate) | Flower/min ÷ (60 / P duration) |
+| Session Flower/Petal (spent) | Flower ÷ Petal Spent |
 | equal P sum | Petal + Nectar × 2 |
 | -min P | equal P − min(equal P) |
 | est. F per P | -min P × Avg. F/P |

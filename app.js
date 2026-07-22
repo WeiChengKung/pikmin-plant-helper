@@ -319,14 +319,20 @@
           ? n0(s.flower) / n0(s.timeSpent)
           : null;
       const pDur = pDurationFromPikmin(s.pikminNum);
-      const flowerPerPetal =
+      const flowerPerPetalRate =
         flowerPerMin !== null && pDur ? flowerPerMin / (60 / pDur) : null;
+      const flowerPerPetalSpent =
+        num(s.flower) !== null && num(s.petalSpent) && n0(s.petalSpent) !== 0
+          ? n0(s.flower) / n0(s.petalSpent)
+          : null;
       const avgEl = tr.querySelector('[data-field="average"]');
       const durEl = tr.querySelector('[data-field="pDuration"]');
-      const fpEl = tr.querySelector('[data-field="flowerPerPetal"]');
+      const fpRateEl = tr.querySelector('[data-field="flowerPerPetalRate"]');
+      const fpSpentEl = tr.querySelector('[data-field="flowerPerPetalSpent"]');
       if (avgEl) avgEl.textContent = fmt(flowerPerMin);
       if (durEl) durEl.textContent = pDur === null ? "" : String(pDur);
-      if (fpEl) fpEl.textContent = fmt(flowerPerPetal);
+      if (fpRateEl) fpRateEl.textContent = fmt(flowerPerPetalRate);
+      if (fpSpentEl) fpSpentEl.textContent = fmt(flowerPerPetalSpent);
     });
   }
 
@@ -343,7 +349,8 @@
         <td><input data-field="timeSpent" class="input-green" type="number" step="any" value="${s.timeSpent ?? ""}" /></td>
         <td class="calc" data-field="average"></td>
         <td class="calc" data-field="pDuration"></td>
-        <td class="calc" data-field="flowerPerPetal"></td>
+        <td class="calc" data-field="flowerPerPetalRate"></td>
+        <td class="calc" data-field="flowerPerPetalSpent"></td>
         <td><input data-field="petalSpent" class="input-green" type="number" step="any" value="${s.petalSpent ?? ""}" /></td>
         <td><button type="button" class="btn btn-icon" data-del="${i}" title="Delete row">×</button></td>
       `;
