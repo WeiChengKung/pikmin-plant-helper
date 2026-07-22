@@ -87,8 +87,8 @@ If the repo name differs, update `base` is not required (this is a plain static 
 | -min P | equal P − min(equal P) |
 | est. F per P | -min P × Avg. F/P |
 | avg remain F | `(target − Σ est.F)` split across colors (Excel IF) |
-| total F | est. F + avg remain F; if &lt; 0 set to 0, other colors rescale to flower target |
-| Expect P Spent | total F / Avg. F/P |
+| total F | est. F + avg remain F; if &lt; 0 set to 0, other colors rescale to flower target; rounded to int |
+| Expect P Spent | total F / Avg. F/P; rounded to int |
 | Expect Time | Expect P / 60 × P duration (min) |
 | Expect End P | Petal − Expect P Spent |
 | Result P spent | Petal − Result End P |

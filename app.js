@@ -195,6 +195,10 @@
       });
       totalFSum = target;
     }
+    COLORS.forEach((c) => {
+      totalF[c] = Math.round(totalF[c]);
+    });
+    totalFSum = COLORS.reduce((s, c) => s + totalF[c], 0);
 
     const fAcc = {};
     fAcc.white = totalF.white;
@@ -204,7 +208,7 @@
 
     const expectP = {};
     COLORS.forEach((c) => {
-      expectP[c] = avgFP === 0 ? 0 : totalF[c] / avgFP;
+      expectP[c] = avgFP === 0 ? 0 : Math.round(totalF[c] / avgFP);
     });
     const expectPSum = COLORS.reduce((s, c) => s + expectP[c], 0);
 
