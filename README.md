@@ -26,7 +26,7 @@ Then visit `http://localhost:8080`.
 3. Copy the Gist ID from the URL (`https://gist.github.com/USER/<GIST_ID>`).
 4. Create a GitHub Personal Access Token with **gist** scope ([tokens](https://github.com/settings/tokens)).
 5. In the web app: **Settings** → paste Gist ID + token → **Save settings**.
-6. Use **Save Gist** / **Load Gist**.
+6. Use **Save Gist** in the toolbar, or **Load Gist** inside **Settings** (to avoid accidental overwrite).
 
 Token is stored only in your browser `localStorage`. Do not commit tokens.
 
