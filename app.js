@@ -539,8 +539,11 @@
     $("#btnSave").addEventListener("click", saveGist);
 
     const { gistId } = getSettings();
-    if (gistId) setStatus("Ready · Gist linked", "ok");
-    else setStatus("Local only · open Settings", "idle");
+    if (gistId) {
+      loadGist();
+    } else {
+      setStatus("Local only · open Settings", "idle");
+    }
   }
 
   init();
