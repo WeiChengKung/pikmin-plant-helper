@@ -34,13 +34,18 @@
     );
   }
 
-  const defaultSession = () => ({
+  const defaultSession = (base) => ({
     date: new Date().toISOString().slice(0, 10),
-    pikminNum: 39,
-    flower: 15011,
-    timeSpent: 89,
-    petalSpent: null,
+    pikminNum: base ? base.pikminNum : 40,
+    flower: base ? base.flower : 15000,
+    timeSpent: base ? base.timeSpent : null,
+    petalSpent: base ? base.petalSpent : null,
   });
+
+  const latestSession = () =>
+    state.sessions && state.sessions.length
+      ? state.sessions[state.sessions.length - 1]
+      : null;
 
   let state = {
     sessions: [defaultSession()],
@@ -511,7 +516,7 @@
     recalc();
 
     $("#btnAddSession").addEventListener("click", () => {
-      state.sessions.push(defaultSession());
+      state.sessions.push(defaultSession(latestSession()));
       persistLocal();
       renderSessions();
       recalc();
