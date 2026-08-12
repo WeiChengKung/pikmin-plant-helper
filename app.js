@@ -2,6 +2,9 @@
   const COLORS = ["white", "yellow", "red", "blue"];
   const GIST_FILE = "pikmin-data.json";
   const LS_KEY = "pikmin-tracker-v1";
+  const VISIBLE_SESSIONS = 5;
+
+  let showAllSessions = false;
 
   const defaultPlanner = () => ({
     avgFP: 30,
@@ -90,9 +93,6 @@
     localStorage.setItem("pikmin-gist-id", $("#gistId").value.trim());
     const token = $("#gistToken").value.trim();
     if (token) localStorage.setItem("pikmin-gist-token", token);
-    localStorage.setItem("pikmin-flower-target", $("#flowerTarget").value || "15000");
-    state.planner.flowerTarget = num($("#flowerTarget").value) || 15000;
-    recalc();
     persistLocal();
     setStatus("Settings saved", "ok");
   }
@@ -282,8 +282,14 @@
   function syncScalarInputsFromDom() {
     const avgEl = $("#avgFP");
     const durEl = $("#pDuration");
+    const targetEl = $("#flowerTarget");
     if (avgEl) state.planner.avgFP = num(avgEl.value);
     if (durEl) state.planner.pDuration = num(durEl.value);
+    if (targetEl) {
+      const target = num(targetEl.value) || 15000;
+      state.planner.flowerTarget = target;
+      localStorage.setItem("pikmin-flower-target", String(target));
+    }
   }
 
   function recalc() {
@@ -341,6 +347,28 @@
     });
   }
 
+  function updateLogToggle() {
+    const btn = $("#btnToggleLog");
+    if (!btn) return;
+    const hiddenCount = Math.max(0, state.sessions.length - VISIBLE_SESSIONS);
+    btn.hidden = hiddenCount === 0;
+    btn.textContent = showAllSessions
+      ? "Hide earlier rows"
+      : `Show ${hiddenCount} earlier row${hiddenCount === 1 ? "" : "s"}`;
+    btn.setAttribute("aria-expanded", String(showAllSessions));
+  }
+
+  function applySessionVisibility() {
+    const body = $("#sessionBody");
+    const firstVisible = showAllSessions
+      ? 0
+      : Math.max(0, state.sessions.length - VISIBLE_SESSIONS);
+    [...body.children].forEach((tr, i) => {
+      tr.classList.toggle("row-collapsed", i < firstVisible);
+    });
+    updateLogToggle();
+  }
+
   function renderSessions() {
     const body = $("#sessionBody");
     body.innerHTML = "";
@@ -388,10 +416,13 @@
         recalc();
       });
     });
+
+    applySessionVisibility();
   }
 
   function fillPlannerInputs() {
     $("#avgFP").value = state.planner.avgFP ?? "";
+    $("#flowerTarget").value = state.planner.flowerTarget ?? 15000;
     const dur = nearestPDurationOption(state.planner.pDuration);
     state.planner.pDuration = dur;
     $("#pDuration").value = String(dur);
@@ -412,6 +443,7 @@
     ["input", "change", "keyup"].forEach((evt) => {
       $("#avgFP")?.addEventListener(evt, onScalarEdit);
       $("#pDuration")?.addEventListener(evt, onScalarEdit);
+      $("#flowerTarget")?.addEventListener(evt, onScalarEdit);
     });
 
     $$("[data-k]").forEach((input) => {
@@ -520,6 +552,11 @@
       persistLocal();
       renderSessions();
       recalc();
+    });
+
+    $("#btnToggleLog").addEventListener("click", () => {
+      showAllSessions = !showAllSessions;
+      applySessionVisibility();
     });
 
     $("#btnSettings").addEventListener("click", () => {

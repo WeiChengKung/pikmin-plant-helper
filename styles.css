@@ -273,6 +273,31 @@ body {
   margin-bottom: 0.65rem;
 }
 
+.block-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.65rem;
+}
+
+.block-head .block-title {
+  margin-bottom: 0;
+}
+
+.block-head .btn-small {
+  margin-bottom: 0;
+}
+
+.btn-small {
+  font-size: 0.72rem;
+  padding: 0.25rem 0.55rem;
+}
+
+.session-table tr.row-collapsed {
+  display: none;
+}
+
 .table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -431,6 +456,10 @@ body {
   width: 5.5rem;
   border: 1px solid var(--line);
   min-height: 2rem;
+}
+
+.avg-fp-row #flowerTarget {
+  width: 7rem;
 }
 
 .avg-fp-row .cell-select {

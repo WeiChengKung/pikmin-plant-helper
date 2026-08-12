@@ -39,10 +39,6 @@
       GitHub Token
       <input id="gistToken" type="password" autocomplete="off" placeholder="ghp_…" />
     </label>
-    <label>
-      Flower target (N8 base)
-      <input id="flowerTarget" type="number" min="1" step="1" value="15000" />
-    </label>
     <div class="settings-actions">
       <button type="button" id="btnSaveSettings" class="btn btn-primary">Save settings</button>
       <button type="button" id="btnLoad" class="btn">Load Gist</button>
@@ -58,7 +54,10 @@
 
       <!-- Session log (Excel A–G) -->
       <div class="block">
-        <div class="block-title">Session log</div>
+        <div class="block-head">
+          <div class="block-title">Session log</div>
+          <button type="button" id="btnToggleLog" class="btn btn-small" aria-expanded="false" hidden></button>
+        </div>
         <div class="table-scroll">
           <table class="sheet-table session-table" id="sessionTable">
             <thead>
@@ -86,6 +85,8 @@
       <div class="block">
         <div class="block-title">Color petal planner</div>
         <div class="avg-fp-row">
+          <span class="label-cell">Flower target (N8 base)</span>
+          <input id="flowerTarget" class="cell-input input-green" type="number" min="1" step="1" value="15000" />
           <span class="label-cell">Avg. F/P</span>
           <input id="avgFP" class="cell-input input-green" type="number" step="any" value="50" />
           <span class="label-cell">P duration</span>
@@ -250,6 +251,6 @@
     </section>
   </main>
 
-  <script src="app.js?v=11"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>
