@@ -11,8 +11,8 @@
     pDuration: 15,
     flowerTarget: 15000,
     startFlowerCount: 0,
-    nectar: { white: 209, yellow: 258, red: 143, blue: 173 },
-    petal: { white: 550, yellow: 550, red: 550, blue: 550 },
+    nectar: { white: 200, yellow: 200, red: 200, blue: 200 },
+    petal: { white: 300, yellow: 300, red: 300, blue: 300 },
     realTime: { white: null, yellow: null, red: null, blue: null },
     resultEndP: { white: null, yellow: null, red: null, blue: null },
   });
@@ -41,9 +41,9 @@
   const defaultSession = (base) => ({
     date: new Date().toISOString().slice(0, 10),
     pikminNum: base ? base.pikminNum : 40,
-    flower: base ? base.flower : 15000,
-    timeSpent: base ? base.timeSpent : null,
-    petalSpent: base ? base.petalSpent : null,
+    flower: 15000,
+    timeSpent: null,
+    petalSpent: null,
   });
 
   const latestSession = () =>
