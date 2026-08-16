@@ -68,6 +68,7 @@ If the repo name differs, update `base` is not required (this is a plain static 
     "avgFP": 30,
     "pDuration": 12,
     "flowerTarget": 15000,
+    "startFlowerCount": 0,
     "nectar": { "white": 209, "yellow": 258, "red": 143, "blue": 173 },
     "petal": { "white": 550, "yellow": 550, "red": 550, "blue": 550 },
     "realTime": { "white": null, "yellow": null, "red": null, "blue": null },

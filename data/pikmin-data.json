@@ -14,6 +14,7 @@
     "avgFP": 30,
     "pDuration": 12,
     "flowerTarget": 15000,
+    "startFlowerCount": 0,
     "nectar": {
       "white": 209,
       "yellow": 258,

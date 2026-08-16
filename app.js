@@ -10,6 +10,7 @@
     avgFP: 30,
     pDuration: 15,
     flowerTarget: 15000,
+    startFlowerCount: 0,
     nectar: { white: 209, yellow: 258, red: 143, blue: 173 },
     petal: { white: 550, yellow: 550, red: 550, blue: 550 },
     realTime: { white: null, yellow: null, red: null, blue: null },
@@ -148,6 +149,9 @@
       localStorage.setItem("pikmin-flower-target", String(state.planner.flowerTarget));
       $("#flowerTarget").value = state.planner.flowerTarget;
     }
+    if (state.planner.startFlowerCount !== undefined) {
+      $("#startFlowerCount").value = state.planner.startFlowerCount;
+    }
   }
 
   /* —— Excel-equivalent formulas —— */
@@ -155,6 +159,8 @@
     const avgFP = n0(p.avgFP);
     const pDuration = n0(p.pDuration);
     const target = n0(p.flowerTarget) || 15000;
+    const startFlowerCount = n0(p.startFlowerCount);
+    const effectiveTarget = Math.max(0, target - startFlowerCount);
 
     const eqP = {};
     COLORS.forEach((c) => {
@@ -173,7 +179,7 @@
     });
     const estFSum = COLORS.reduce((s, c) => s + estF[c], 0);
 
-    const remain = target - estFSum;
+    const remain = effectiveTarget - estFSum;
     const avgRemain = {};
     COLORS.forEach((c) => {
       if (remain > 0) avgRemain[c] = remain / 4;
@@ -182,23 +188,23 @@
     });
 
     // total F = est + avg remain; clamp negatives to 0 and
-    // rescale other colors so Σ total F still equals the flower target.
+    // rescale other colors so Σ total F still equals the effective target.
     const totalF = {};
     COLORS.forEach((c) => {
       totalF[c] = Math.max(0, estF[c] + avgRemain[c]);
     });
     let totalFSum = COLORS.reduce((s, c) => s + totalF[c], 0);
-    if (totalFSum > 0 && Math.abs(totalFSum - target) > 1e-9) {
-      const scale = target / totalFSum;
+    if (totalFSum > 0 && Math.abs(totalFSum - effectiveTarget) > 1e-9) {
+      const scale = effectiveTarget / totalFSum;
       COLORS.forEach((c) => {
         totalF[c] *= scale;
       });
-      totalFSum = target;
-    } else if (totalFSum === 0 && target > 0) {
+      totalFSum = effectiveTarget;
+    } else if (totalFSum === 0 && effectiveTarget > 0) {
       COLORS.forEach((c) => {
-        totalF[c] = target / COLORS.length;
+        totalF[c] = effectiveTarget / COLORS.length;
       });
-      totalFSum = target;
+      totalFSum = effectiveTarget;
     }
     COLORS.forEach((c) => {
       totalF[c] = Math.round(totalF[c]);
@@ -206,7 +212,7 @@
     totalFSum = COLORS.reduce((s, c) => s + totalF[c], 0);
 
     const fAcc = {};
-    fAcc.white = totalF.white;
+    fAcc.white = startFlowerCount + totalF.white;
     fAcc.yellow = fAcc.white + totalF.yellow;
     fAcc.red = fAcc.yellow + totalF.red;
     fAcc.blue = fAcc.red + totalF.blue;
@@ -283,12 +289,16 @@
     const avgEl = $("#avgFP");
     const durEl = $("#pDuration");
     const targetEl = $("#flowerTarget");
+    const startFEl = $("#startFlowerCount");
     if (avgEl) state.planner.avgFP = num(avgEl.value);
     if (durEl) state.planner.pDuration = num(durEl.value);
     if (targetEl) {
       const target = num(targetEl.value) || 15000;
       state.planner.flowerTarget = target;
       localStorage.setItem("pikmin-flower-target", String(target));
+    }
+    if (startFEl) {
+      state.planner.startFlowerCount = num(startFEl.value) || 0;
     }
   }
 
@@ -423,6 +433,7 @@
   function fillPlannerInputs() {
     $("#avgFP").value = state.planner.avgFP ?? "";
     $("#flowerTarget").value = state.planner.flowerTarget ?? 15000;
+    $("#startFlowerCount").value = state.planner.startFlowerCount ?? 0;
     const dur = nearestPDurationOption(state.planner.pDuration);
     state.planner.pDuration = dur;
     $("#pDuration").value = String(dur);
@@ -444,6 +455,7 @@
       $("#avgFP")?.addEventListener(evt, onScalarEdit);
       $("#pDuration")?.addEventListener(evt, onScalarEdit);
       $("#flowerTarget")?.addEventListener(evt, onScalarEdit);
+      $("#startFlowerCount")?.addEventListener(evt, onScalarEdit);
     });
 
     $$("[data-k]").forEach((input) => {
