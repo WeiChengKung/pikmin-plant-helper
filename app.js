@@ -11,6 +11,7 @@
     pDuration: 15,
     flowerTarget: 15000,
     startFlowerCount: 0,
+    extraPSpent: 0,
     nectar: { white: 200, yellow: 200, red: 200, blue: 200 },
     petal: { white: 300, yellow: 300, red: 300, blue: 300 },
     realTime: { white: null, yellow: null, red: null, blue: null },
@@ -152,6 +153,9 @@
     if (state.planner.startFlowerCount !== undefined) {
       $("#startFlowerCount").value = state.planner.startFlowerCount;
     }
+    if (state.planner.extraPSpent !== undefined) {
+      $("#extraPSpent").value = state.planner.extraPSpent;
+    }
   }
 
   /* —— Excel-equivalent formulas —— */
@@ -240,11 +244,13 @@
     });
     const resultEndPSum = COLORS.reduce((s, c) => s + n0(resultEndP[c]), 0);
 
+    const extraPSpent = n0(p.extraPSpent);
     const resultPSpent = {};
     COLORS.forEach((c) => {
       resultPSpent[c] = n0(p.petal[c]) - n0(resultEndP[c]);
     });
-    const resultPSpentSum = COLORS.reduce((s, c) => s + resultPSpent[c], 0);
+    const resultPSpentSum =
+      COLORS.reduce((s, c) => s + resultPSpent[c], 0) + extraPSpent;
 
     const delta = {};
     COLORS.forEach((c) => {
@@ -290,6 +296,7 @@
     const durEl = $("#pDuration");
     const targetEl = $("#flowerTarget");
     const startFEl = $("#startFlowerCount");
+    const extraPEl = $("#extraPSpent");
     if (avgEl) state.planner.avgFP = num(avgEl.value);
     if (durEl) state.planner.pDuration = num(durEl.value);
     if (targetEl) {
@@ -299,6 +306,9 @@
     }
     if (startFEl) {
       state.planner.startFlowerCount = num(startFEl.value) || 0;
+    }
+    if (extraPEl) {
+      state.planner.extraPSpent = num(extraPEl.value) || 0;
     }
   }
 
@@ -434,6 +444,7 @@
     $("#avgFP").value = state.planner.avgFP ?? "";
     $("#flowerTarget").value = state.planner.flowerTarget ?? 15000;
     $("#startFlowerCount").value = state.planner.startFlowerCount ?? 0;
+    $("#extraPSpent").value = state.planner.extraPSpent ?? 0;
     const dur = nearestPDurationOption(state.planner.pDuration);
     state.planner.pDuration = dur;
     $("#pDuration").value = String(dur);
@@ -456,6 +467,7 @@
       $("#pDuration")?.addEventListener(evt, onScalarEdit);
       $("#flowerTarget")?.addEventListener(evt, onScalarEdit);
       $("#startFlowerCount")?.addEventListener(evt, onScalarEdit);
+      $("#extraPSpent")?.addEventListener(evt, onScalarEdit);
     });
 
     $$("[data-k]").forEach((input) => {

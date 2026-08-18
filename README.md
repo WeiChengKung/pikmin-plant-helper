@@ -69,6 +69,7 @@ If the repo name differs, update `base` is not required (this is a plain static 
     "pDuration": 12,
     "flowerTarget": 15000,
     "startFlowerCount": 0,
+    "extraPSpent": 0,
     "nectar": { "white": 209, "yellow": 258, "red": 143, "blue": 173 },
     "petal": { "white": 550, "yellow": 550, "red": 550, "blue": 550 },
     "realTime": { "white": null, "yellow": null, "red": null, "blue": null },
@@ -93,7 +94,7 @@ If the repo name differs, update `base` is not required (this is a plain static 
 | Expect P Spent | total F / Avg. F/P; rounded to int |
 | Expect Time | Expect P / 60 × P duration (min) |
 | Expect End P | Petal − Expect P Spent |
-| Result P spent | Petal − Result End P |
+| Result P spent | Petal − Result End P; sum = color totals + Extra P Spent |
 | Delta | Result End P − Expect End P |
 | End eq. P sum | Nectar × 2 + Result End P |
 

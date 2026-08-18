@@ -462,7 +462,8 @@ body {
   width: 7rem;
 }
 
-.avg-fp-row #startFlowerCount {
+.avg-fp-row #startFlowerCount,
+.avg-fp-row #extraPSpent {
   width: 6.5rem;
 }
 
